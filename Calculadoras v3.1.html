@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadoras Magasteel v3.1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://magasteel.pt/wp-content/uploads/2025/05/favicon-Magasteel.png" type="image/png">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #e6ecf3 0%, #c5d9e8 100%);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0033A0 0%, #001f5c 100%);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: pulse 15s ease-in-out infinite;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: all 0.6s ease;
+      pointer-events: none;
+    }
+
+    header:hover::after {
+      width: 600px;
+      height: 600px;
+      opacity: 1;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.3; }
+    }
+
+    header img {
+      height: 70px;
+      display: block;
+      margin: 0 auto 15px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .main {
+      padding: 50px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 35px;
+      justify-content: center;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .calculator {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      flex: 1 1 350px;
+      max-width: 420px;
+      box-sizing: border-box;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .calculator:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+    }
+
+    .calculator h2 {
+      color: #0033A0;
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 12px;
+    }    .calculator h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #0033A0, #0066cc);
+      border-radius: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 10px;
+      font-size: 15px;
+      box-sizing: border-box;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+      background-color: #f8f9fa;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0033A0;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(0, 51, 160, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+      background: linear-gradient(135deg, #0033A0 0%, #001f5c 100%);
+      color: white;
+      border: none;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(0, 51, 160, 0.3);
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #001f5c 0%, #0033A0 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 51, 160, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }    .resultado {
+      margin-top: 25px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #0033A0;
+      text-align: center;
+      padding: 15px;
+      background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+      border-radius: 10px;
+      border-left: 4px solid #0033A0;
+      min-height: 20px;
+    }
+
+    .exportar {
+      margin: 30px auto;
+      text-align: center;
+    }    .exportar button {
+      width: auto;
+      padding: 15px 40px;
+      font-size: 16px;
+      background: linear-gradient(135deg, #0033A0 0%, #0055cc 100%);
+      box-shadow: 0 4px 15px rgba(0, 51, 160, 0.3);
+    }
+
+    .exportar button:hover {
+      background: linear-gradient(135deg, #0055cc 0%, #0033A0 100%);
+      box-shadow: 0 6px 20px rgba(0, 51, 160, 0.4);
+    }
+
+    .version-badge {
+      background: linear-gradient(135deg, #0033A0 0%, #0066cc 100%);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 15px;
+      box-shadow: 0 4px 10px rgba(0, 51, 160, 0.3);
+      position: relative;
+      z-index: 1;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: white;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 600px) {
+      .calculator {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+
+      .main {
+        padding: 30px 15px;
+        gap: 25px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      header img {
+        height: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="https://magasteel.pt/wp-content/uploads/2025/05/Logo-Magasteel-STS-R-Branco-01-01.png" alt="Magasteel Logo">
+    <h1>Calculadoras Magasteel</h1>
+    <span class="version-badge">v3.1</span>
+  </header>
+
+  <div class="main">
+    <!-- Preço por Metro -->
+    <div class="calculator">
+      <h2>Preço por Metro</h2>
+      <div class="form-group">
+        <label>Preço por tonelada (EUR):</label>
+        <input type="number" id="precoTonelada" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Peso teórico (kg/m):</label>
+        <input type="number" id="pesoTeorico1" step="0.01">
+      </div>
+      <button onclick="calcularPrecoPorMetro()">Calcular</button>
+      <div class="resultado" id="resultadoMetro"></div>
+    </div>
+
+    <!-- Preço por Tonelada -->
+    <div class="calculator">
+      <h2>Preço por Tonelada</h2>
+      <div class="form-group">
+        <label>Preço por metro (EUR):</label>
+        <input type="number" id="precoMetro" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Peso teórico (kg/m):</label>
+        <input type="number" id="pesoTeorico2" step="0.01">
+      </div>
+      <button onclick="calcularPrecoPorTonelada()">Calcular</button>
+      <div class="resultado" id="resultadoTonelada"></div>
+    </div>
+
+    <!-- Margem de Venda -->
+    <div class="calculator">
+      <h2>Margem de Venda</h2>
+      <div class="form-group">
+        <label>Preço de venda (EUR):</label>
+        <input type="number" id="precoVenda" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Preço de compra (EUR):</label>
+        <input type="number" id="precoCompra" step="0.01">
+      </div>
+      <button onclick="calcularMargem()">Calcular</button>
+      <div class="resultado" id="resultadoMargem"></div>
+    </div>
+
+    <!-- Conversor de Unidades -->
+    <div class="calculator">
+      <h2>🆕 Conversor de Unidades</h2>
+      <div class="form-group">
+        <label>Tipo de conversão:</label>
+        <select id="tipoConversao">
+          <optgroup label="Imperial → Métrico">
+            <option value="polegadas-mm">Polegadas → Milímetros</option>
+            <option value="pes-m">Pés → Metros</option>
+            <option value="jardas-m">Jardas → Metros</option>
+            <option value="milhas-km">Milhas → Quilómetros</option>
+            <option value="libras-kg">Libras (lb) → Quilogramas</option>
+            <option value="onças-g">Onças → Gramas</option>
+            <option value="tonUS-t">Toneladas (US) → Toneladas métricas</option>
+          </optgroup>
+          <optgroup label="Métrico → Imperial">
+            <option value="mm-polegadas">Milímetros → Polegadas</option>
+            <option value="m-pes">Metros → Pés</option>
+            <option value="m-jardas">Metros → Jardas</option>
+            <option value="km-milhas">Quilómetros → Milhas</option>
+            <option value="kg-libras">Quilogramas → Libras (lb)</option>
+            <option value="g-onças">Gramas → Onças</option>
+            <option value="t-tonUS">Toneladas métricas → Toneladas (US)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Valor a converter:</label>
+        <input type="number" id="valorImperial" step="0.001">
+      </div>
+      <button onclick="converterUnidade()">Converter</button>
+      <div class="resultado" id="resultadoConversao"></div>
+    </div>
+  </div>
+
+  <div class="exportar">
+    <button onclick="exportarParaPDF()">📄 Exportar Resultados em PDF</button>
+  </div>
+
+  <script>
+    function calcularPrecoPorMetro() {
+      const precoTonelada = parseFloat(document.getElementById('precoTonelada').value);
+      const pesoTeorico = parseFloat(document.getElementById('pesoTeorico1').value);
+
+      if (isNaN(precoTonelada) || isNaN(pesoTeorico) || precoTonelada <= 0 || pesoTeorico <= 0) {
+        document.getElementById('resultadoMetro').innerText = "Valores inválidos.";
+        return;
+      }
+
+      const precoPorMetro = pesoTeorico * (precoTonelada / 1000);
+      document.getElementById('resultadoMetro').innerText = `Preço por metro: €${precoPorMetro.toFixed(3)}`;
+    }
+
+    function calcularPrecoPorTonelada() {
+      const precoMetro = parseFloat(document.getElementById('precoMetro').value);
+      const pesoTeorico = parseFloat(document.getElementById('pesoTeorico2').value);
+
+      if (isNaN(precoMetro) || isNaN(pesoTeorico) || precoMetro <= 0 || pesoTeorico <= 0) {
+        document.getElementById('resultadoTonelada').innerText = "Valores inválidos.";
+        return;
+      }
+
+      const precoPorTonelada = (precoMetro / pesoTeorico) * 1000;
+      document.getElementById('resultadoTonelada').innerText = `Preço por tonelada: €${precoPorTonelada.toFixed(2)}`;
+    }
+
+    function calcularMargem() {
+      const venda = parseFloat(document.getElementById('precoVenda').value);
+      const compra = parseFloat(document.getElementById('precoCompra').value);
+
+      if (isNaN(venda) || isNaN(compra) || venda <= 0 || compra <= 0) {
+        document.getElementById('resultadoMargem').innerText = "Valores inválidos.";
+        return;
+      }
+
+      const margem = ((venda / compra) - 1) * 100;
+      document.getElementById('resultadoMargem').innerText = `Margem: ${margem.toFixed(2)}%`;
+    }
+
+    function converterUnidade() {
+      const tipo = document.getElementById('tipoConversao').value;
+      const valor = parseFloat(document.getElementById('valorImperial').value);
+
+      if (isNaN(valor) || valor < 0) {
+        document.getElementById('resultadoConversao').innerText = "Valor inválido.";
+        return;
+      }
+
+      let resultado = 0;
+      let unidadeOrigem = "";
+      let unidadeDestino = "";
+
+      switch(tipo) {
+        // Imperial → Métrico
+        case 'polegadas-mm':
+          resultado = valor * 25.4;
+          unidadeOrigem = "in";
+          unidadeDestino = "mm";
+          break;
+        case 'pes-m':
+          resultado = valor * 0.3048;
+          unidadeOrigem = "ft";
+          unidadeDestino = "m";
+          break;
+        case 'jardas-m':
+          resultado = valor * 0.9144;
+          unidadeOrigem = "yd";
+          unidadeDestino = "m";
+          break;
+        case 'milhas-km':
+          resultado = valor * 1.60934;
+          unidadeOrigem = "mi";
+          unidadeDestino = "km";
+          break;
+        case 'libras-kg':
+          resultado = valor * 0.453592;
+          unidadeOrigem = "lb";
+          unidadeDestino = "kg";
+          break;
+        case 'onças-g':
+          resultado = valor * 28.3495;
+          unidadeOrigem = "oz";
+          unidadeDestino = "g";
+          break;
+        case 'tonUS-t':
+          resultado = valor * 0.907185;
+          unidadeOrigem = "ton (US)";
+          unidadeDestino = "t";
+          break;
+
+        // Métrico → Imperial
+        case 'mm-polegadas':
+          resultado = valor / 25.4;
+          unidadeOrigem = "mm";
+          unidadeDestino = "in";
+          break;
+        case 'm-pes':
+          resultado = valor / 0.3048;
+          unidadeOrigem = "m";
+          unidadeDestino = "ft";
+          break;
+        case 'm-jardas':
+          resultado = valor / 0.9144;
+          unidadeOrigem = "m";
+          unidadeDestino = "yd";
+          break;
+        case 'km-milhas':
+          resultado = valor / 1.60934;
+          unidadeOrigem = "km";
+          unidadeDestino = "mi";
+          break;
+        case 'kg-libras':
+          resultado = valor / 0.453592;
+          unidadeOrigem = "kg";
+          unidadeDestino = "lb";
+          break;
+        case 'g-onças':
+          resultado = valor / 28.3495;
+          unidadeOrigem = "g";
+          unidadeDestino = "oz";
+          break;
+        case 't-tonUS':
+          resultado = valor / 0.907185;
+          unidadeOrigem = "t";
+          unidadeDestino = "ton (US)";
+          break;
+      }
+
+      document.getElementById('resultadoConversao').innerHTML = 
+        `<strong>${valor.toFixed(3)} ${unidadeOrigem}</strong> = <strong>${resultado.toFixed(3)} ${unidadeDestino}</strong>`;
+    }
+
+    function exportarParaPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const resultadoMetro = document.getElementById('resultadoMetro').innerText || "Sem resultado.";
+      const resultadoTonelada = document.getElementById('resultadoTonelada').innerText || "Sem resultado.";
+      const resultadoMargem = document.getElementById('resultadoMargem').innerText || "Sem resultado.";
+      const resultadoConversao = document.getElementById('resultadoConversao').innerText || "Sem resultado.";
+
+      doc.setFontSize(16);
+      doc.text("Calculadoras Magasteel v3.1", 20, 20);
+      doc.setFontSize(12);
+      doc.text("Resultado - Preço por Metro:", 20, 40);
+      doc.text(resultadoMetro, 20, 50);
+      doc.text("Resultado - Preço por Tonelada:", 20, 70);
+      doc.text(resultadoTonelada, 20, 80);
+      doc.text("Resultado - Margem de Venda:", 20, 100);
+      doc.text(resultadoMargem, 20, 110);
+      doc.text("Resultado - Conversor de Unidades:", 20, 130);
+      doc.text(resultadoConversao, 20, 140);
+
+      doc.save("resultado-magasteel-v3.pdf");
+    }
+  </script>
+
+</body>
+</html>
+``` 
